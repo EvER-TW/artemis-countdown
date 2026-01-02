@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARTEMIS REBIRTH | 倒數計時</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+TC:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Noto Sans TC', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .bg-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: #000;
+        }
+
+        #bg-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://scontent-tpe1-1.cdninstagram.com/v/t51.82787-15/608011295_17983828157946037_3667081886744636125_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=105&ig_cache_key=Mzc5OTU4MDQyNTQzNDk1MDUwNQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjEwODB4MTQzNy5zZHIuQzMifQ%3D%3D&_nc_ohc=v22ZhR2fpwsQ7kNvwErt_UJ&_nc_oc=AdknVaVa1w4_o_WVhBt_h84EbDTZXTEVq6rbQ14AY7cnZsYAYu_QpZfKCUqBRijbOk4&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-tpe1-1.cdninstagram.com&_nc_gid=d5hacOQTDZuX-0nOnpR0cQ&oh=00_Afq5Nh1CoAIoS5EWWWAXnozLFWkwiWc4xhXoXKqqAhO3iQ&oe=695DB9AF');
+            background-size: cover;
+            /* 電腦版保持底部對齊 */
+            background-position: center bottom;
+            background-repeat: no-repeat;
+            transition: transform 0.5s ease-out, opacity 1s ease-in-out;
+            opacity: 0.4;
+            mask-image: linear-gradient(to bottom,
+                    rgba(0, 0, 0, 0) 0%,
+                    rgba(0, 0, 0, 0) 5%,
+                    rgba(0, 0, 0, 1) 40%,
+                    rgba(0, 0, 0, 1) 100%);
+            -webkit-mask-image: linear-gradient(to bottom,
+                    rgba(0, 0, 0, 0) 0%,
+                    rgba(0, 0, 0, 0) 5%,
+                    rgba(0, 0, 0, 1) 40%,
+                    rgba(0, 0, 0, 1) 100%);
+        }
+
+        /* 手機版 RWD：維持人物位置在極深處，避開靠上的計時器 */
+        @media (max-width: 767px) {
+            #bg-image {
+                margin-top: 240px;
+                background-position: center 350%;
+            }
+        }
+
+        .digital-font {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .glass-effect {
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+        }
+
+        /* 電腦版置中微調 */
+        @media (min-width: 768px) {
+            .glass-effect {
+                transform: translateY(-10%);
+            }
+        }
+
+        .glow-text {
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .unit-label {
+            letter-spacing: 0.3em;
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 700;
+        }
+
+        .scanline {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            z-index: 20;
+            opacity: 0.1;
+        }
+    </style>
+</head>
+<!-- 手機版靠上(items-start + pt-12)，電腦版置中(md:items-center) -->
+
+<body class="flex justify-center items-start pt-12 md:pt-0 md:items-center p-4">
+
+    <div class="bg-wrapper">
+        <div id="bg-image"></div>
+        <div class="scanline"></div>
+    </div>
+
+    <div class="container max-w-4xl text-center z-10">
+        <!-- Artemis Program : Rebirth -->
+        <div class="mb-6 opacity-60">
+            <p class="digital-font text-[12px] md:text-sm tracking-[0.6em] uppercase font-bold text-white/80">Artemis
+                Program : Rebirth</p>
+            <div class="h-px w-32 bg-gradient-to-r from-transparent via-white/40 to-transparent mx-auto mt-2"></div>
+        </div>
+
+        <!-- 計時面板 -->
+        <div class="glass-effect p-8 md:p-12 relative overflow-hidden">
+            <div
+                class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent">
+            </div>
+
+            <h1 class="digital-font text-2xl md:text-4xl font-bold tracking-[0.5em] mb-10 glow-text">ARTEMIS REBIRTH
+            </h1>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="flex flex-col border-r border-white/10 last:border-0">
+                    <span id="days" class="digital-font text-4xl md:text-6xl font-bold">000</span>
+                    <span class="unit-label mt-2">DAYS</span>
+                </div>
+                <div class="flex flex-col border-r border-white/10 last:border-0">
+                    <span id="hours" class="digital-font text-4xl md:text-6xl font-bold">00</span>
+                    <span class="unit-label mt-2">HOURS</span>
+                </div>
+                <div class="flex flex-col border-r border-white/10 last:border-0">
+                    <span id="minutes" class="digital-font text-4xl md:text-6xl font-bold">00</span>
+                    <span class="unit-label mt-2">MINUTES</span>
+                </div>
+                <div class="flex flex-col">
+                    <span id="seconds" class="digital-font text-4xl md:text-6xl font-bold text-blue-400">00</span>
+                    <span class="unit-label mt-2 text-blue-400/50">SECONDS</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部日期與同步狀態：向下移動約 200px (mt-[216px]) -->
+        <div class="mt-[216px] space-y-4">
+            <p class="digital-font text-lg tracking-[0.4em] text-white/70">2026.07.01</p>
+            <div class="flex flex-col items-center">
+                <div class="flex items-center space-x-3 mb-2">
+                    <span class="text-[9px] text-white/20 tracking-widest uppercase">Sync Progress</span>
+                    <span id="sync-text" class="text-[10px] text-white/60 digital-font">0.00%</span>
+                </div>
+                <div class="w-40 h-[2px] bg-white/5 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="h-full bg-white/30 transition-all duration-1000" style="width: 0%">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const targetDate = new Date("July 1, 2026 00:00:00").getTime();
+        const startDate = new Date("January 1, 2025 00:00:00").getTime();
+        const totalDuration = targetDate - startDate;
+
+        const bgImage = document.getElementById("bg-image");
+        const progressBar = document.getElementById("progress-bar");
+        const syncText = document.getElementById("sync-text");
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            let progress = (now - startDate) / totalDuration;
+            progress = Math.max(0, Math.min(1, progress));
+
+            const currentOpacity = 0.4 + (progress * 0.6);
+            bgImage.style.opacity = currentOpacity;
+
+            progressBar.style.width = (progress * 100) + "%";
+            syncText.innerText = (progress * 100).toFixed(2) + "%";
+
+            if (distance < 0) {
+                document.querySelector(".container").innerHTML = `
+                    <h1 class="digital-font text-4xl font-bold glow-text mb-4">REBORN</h1>
+                    <p class="digital-font tracking-[0.5em] text-lg text-white/50">MISSION IN PROGRESS</p>
+                `;
+                bgImage.style.opacity = 1;
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerText = days.toString().padStart(3, '0');
+            document.getElementById("hours").innerText = hours.toString().padStart(2, '0');
+            document.getElementById("minutes").innerText = minutes.toString().padStart(2, '0');
+            document.getElementById("seconds").innerText = seconds.toString().padStart(2, '0');
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 15;
+            const y = (e.clientY / window.innerHeight - 0.5) * 15;
+            bgImage.style.transform = `scale(1.1) translate(${-x}px, ${-y}px)`;
+        });
+    </script>
+</body>
+
+</html>
